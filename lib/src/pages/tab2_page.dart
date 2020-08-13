@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sia_front/src/services/productos_service.dart';
 import 'package:sia_front/src/utlis/utils.dart' as utils;
 import 'package:sia_front/src/widgets/lista_productos.dart';
@@ -13,6 +14,20 @@ class Tab2Page extends StatefulWidget {
 
 class _Tab2PageState extends State<Tab2Page> {
   final formKey = GlobalKey<FormState>();
+
+  String _token='';
+  
+  void initState() {
+    super.initState();
+    _loadCounter();
+  }
+
+  _loadCounter() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    setState(() {
+      _token = (prefs.getString('token')??'');
+    });
+  }
 
   String nombre;
   String categoria;
@@ -149,12 +164,12 @@ class _Tab2PageState extends State<Tab2Page> {
     formKey.currentState.save();
 
     print('aquiiiiiii');
-    print(nombre);
+    print(_token);
 
     final url = 'http://45.56.162.190:3001/api/productos';
     final productService = Provider.of<ProductService>(context, listen: false);
     http.post(url, headers: {
-      'user-token' : 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c3VhcmlvSWQiOiJlOTQ2ODJhMi0xZTNlLTQxMzMtODI4My1iZjkxZjlmNmJjMDMiLCJjcmVhdGVkQXQiOjE1OTcxMTk5NzEsImV4cGlyZWRBdCI6MTU5NzI5Mjc3MX0.Xs0VMzrlVhKpMzl5-EyhueTwuddkVtCwqqBcnoPq5Dg'}, 
+      'user-token' : '$_token'}, 
       body: {
         'nombre' : '$nombre',
         'precio' : '$precio',

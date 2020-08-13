@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_material_pickers/flutter_material_pickers.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sia_front/src/models/productos_models.dart';
 import 'package:sia_front/src/services/productos_service.dart';
 import 'package:sia_front/src/theme/tema.dart';
@@ -24,8 +25,8 @@ class ListaProductos extends StatelessWidget {
   }
 }
 
-class _Producto extends StatelessWidget {
-  
+class _Producto extends StatefulWidget {
+
   final Productos productos;
   final int index;
 
@@ -35,10 +36,30 @@ class _Producto extends StatelessWidget {
   });
 
   @override
+  __ProductoState createState() => __ProductoState();
+}
+
+class __ProductoState extends State<_Producto> {
+  
+  String _token='';
+
+  void initState() {
+    super.initState();
+    _loadCounter();
+  }
+
+  _loadCounter() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    setState(() {
+      _token = (prefs.getString('token')??'');
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Column(
       children: <Widget>[
-        _TarjetaTopBar( productos, index)
+        _TarjetaTopBar( widget.productos, widget.index)
       ],
     );
   }

@@ -1,9 +1,18 @@
 import 'package:flutter/material.dart';
+import 'package:http/http.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sia_front/src/models/productos_models.dart';
 import 'package:http/http.dart' as http;
 
 
 class ProductService with ChangeNotifier {
+
+  String _token='';
+
+  _loadCounter() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    return _token = (prefs.getString('token')??'');
+  }
 
   List<Productos> product = [];
 
@@ -15,17 +24,27 @@ class ProductService with ChangeNotifier {
 
   getProductos() async{
 
-    final url = 'http://45.56.162.190:3001/api/productos';
+    String url;
+    Response resp;
+    List <Productos> productResponse;
 
-    final resp = await  http.get(url, headers: {'user-token' : 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c3VhcmlvSWQiOiJlOTQ2ODJhMi0xZTNlLTQxMzMtODI4My1iZjkxZjlmNmJjMDMiLCJjcmVhdGVkQXQiOjE1OTcxMTk5NzEsImV4cGlyZWRBdCI6MTU5NzI5Mjc3MX0.Xs0VMzrlVhKpMzl5-EyhueTwuddkVtCwqqBcnoPq5Dg'});
-    
-    print(resp.body);
+    _loadCounter().then((value) async => {
+      
+      url = 'http://45.56.162.190:3001/api/productos',
 
-    final productResponse = productosFromJson( resp.body );
+      resp = await http.get(url, headers: {'user-token' : '$value'}),
+      
 
-    this.product = productResponse;
-    print(productResponse[0].nombre);
-    notifyListeners();
+      print('aqui esta el token'),
+      print(value),
+      print(resp.body),
+
+      productResponse = productosFromJson( resp.body ),
+
+      this.product = productResponse,
+      print(productResponse[0].nombre),
+      notifyListeners(),
+    });
 
   }
 
