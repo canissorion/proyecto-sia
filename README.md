@@ -1,5 +1,10 @@
 # sia_front
 
+Credenciales Demo:
+
+User: admin@admin.com
+Password: admin123
+
 A new Flutter project.
 
 ## Getting Started
